@@ -1,0 +1,5 @@
+---
+# vars file for haproxy
+
+front: 8080
+back: 80

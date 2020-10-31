@@ -1,0 +1,5 @@
+- hosts: localhost
+  vars_files:
+    - /etc/myroles/ec2/vars/credentials.yml
+  roles:
+    - role: ec2

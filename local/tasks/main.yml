@@ -1,0 +1,70 @@
+---
+# tasks file for local
+#
+- name: create a new ec2 key pair
+  ec2_key:
+    name: ansible_key
+    ec2_region: 'ap-south-1'
+    key_material: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDzIc4J8R/kk2VegmZ+Hh7Ax2RGapK/7DtSX5FgNkrZSZyp5LFFJFhBXYefAtBhvSznuPTvTfW3Zv6kJ7cQsa2XaNi6/yru6FjQ/SbUAP6YlQ8uTccrCWxjVStURlZovq6pH5aXisRYsre57sUpqE8jrh+uKIgaBzboMROT0fEgGCtgOH+Di6rYlhvAw1BD5hy+UBRcWSf9wjOtT0NLkf+hL0a63uuBcWQq9km3grWAZwMYgU4qSlSXRARJ6RfFXAUq1AwPhNd5/d7YdQCg/WlmJJuzwPfmsEDKGlsUpPUOopxiFwNBqYoYV5L1XHgLOZ8Q4dAVSaQM1Xm/tynkRhKt'
+    aws_access_key: "{{ myuser }}"
+    aws_secret_key: "{{ mypass }}"
+- name: security group rule
+  ec2_group:
+        name: ansible_sg
+        description: sg with rule descriptions
+        vpc_id: vpc-eb9ac183
+        #  profile: "{{ aws_profile }}"
+        rules:
+          - proto: tcp
+            ports:
+            - 80
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 80
+          - proto: tcp
+            ports:
+            - 22
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 22
+          - proto: tcp
+            ports:
+            - 8080
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 8080
+        ec2_region: 'ap-south-1'
+        aws_access_key: "{{ myuser }}"
+        aws_secret_key: "{{ mypass }}"
+
+- name: launch EC2 for webserver
+  ec2:
+    key_name: "ansible_key"
+    instance_type: "t2.micro"
+    image: "ami-052c08d70def0ac62"
+    wait: yes
+    count: 3
+    instance_tags:
+      Name: "web"
+    vpc_subnet_id: "subnet-e438788c"
+    assign_public_ip: yes
+    region: "ap-south-1"
+    state: present
+    group: "ansible_sg"
+    aws_access_key: "{{ myuser }}"
+    aws_secret_key: "{{ mypass }}"
+- name: launch EC2 for LoadBalancer
+  ec2:
+    key_name: "ansible_key"
+    instance_type: "t2.micro"
+    image: "ami-052c08d70def0ac62"
+    wait: yes
+    count: 1
+    instance_tags:
+      Name: "loadbalancer"
+    vpc_subnet_id: "subnet-e438788c"
+    assign_public_ip: yes
+    region: "ap-south-1"
+    state: present
+    group: "ansible_sg"
+    aws_access_key: "{{ myuser }}"
+    aws_secret_key: "{{ mypass }}"
+
+

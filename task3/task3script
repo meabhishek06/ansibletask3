@@ -1,0 +1,4 @@
+#!/bin/bash
+ansible-playbook prefinal.yml
+sleep 5
+ansible-playbook final.yml

@@ -1,0 +1,6 @@
+- hosts: tag_Name_web
+  roles:
+  - role: webserver1
+- hosts: tag_Name_loadbalancer
+  roles:
+  - role: haproxy
